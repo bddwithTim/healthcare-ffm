@@ -1,0 +1,43 @@
+# IDE
+.idea/
+.vscode/
+.vscode/.ropeproject/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+*.egg-info/
+pip-wheel-metadata/
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+*.output
+.mypy_cache/
+
+# pyenv
+.python-version
+
+# Environments
+.env
+.venv
+env/
+venv/
+
+# Other
+.envrc
+*.log
+config.override.yaml
+coverage.xml
+junit-report.xml
+
+reports/
+*.DS_Store
