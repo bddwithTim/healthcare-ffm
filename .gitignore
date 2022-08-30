@@ -39,6 +39,6 @@ config.override.yaml
 coverage.xml
 junit-report.xml
 
-results/
+/tests/results/
 reports/
 *.DS_Store
