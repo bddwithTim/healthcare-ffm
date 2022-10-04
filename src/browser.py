@@ -1,3 +1,4 @@
+import time
 from typing import List
 
 from selenium import webdriver
@@ -25,6 +26,12 @@ class Browser:
         except TimeoutException:
             assert False, f"web element '{element}' not found"
 
+    # def wait_for_element_to_be_visible(self,element: str) -> WebElement:
+    #     try:
+    #         return self.rest.until(ec._element_if_visible(element, True))
+    #     except TimeoutException:
+    #         assert False, f"web element '{element}' not found"
+
     def get_web_element(self, element: str) -> WebElement:
         return self.rest.until(ec.presence_of_element_located((By.XPATH, element)))
 
@@ -32,6 +39,7 @@ class Browser:
         return self.rest.until(ec.presence_of_all_elements_located((By.XPATH, element)))
 
     def click(self, element_value: str) -> None:
+        self.scroll_into_view(element_value)
         web_element = self.wait_for_element_to_be_clickable(element_value)
         web_element.click()
 
@@ -92,6 +100,9 @@ class Browser:
         element = self.rest.until(ec.presence_of_element_located((By.XPATH, web_element)))
         element.send_keys(data)
 
+    def wait_for_url(self, relative_url: str) -> None:
+        self.rest.until(ec.url_contains(relative_url))
+
     def extract_all_plans(self) -> List:
         """
         Extract the plans information from the page.
@@ -109,7 +120,8 @@ class Browser:
             for plan in plans:
                 plan_name = plan.find_element(By.XPATH, ".//h2[contains(@class, 'pet-c-plan-title__name')]").text
                 plan_provider = plan.find_element(By.XPATH, ".//div[contains(@class, 'plan-title__issuer')]").text
-                plan_premium = plan.find_element(By.XPATH, ".//div[contains(@class, 'plan-summary__premium-with-credit')]").text
+                plan_premium = plan.find_element(By.XPATH,
+                                                 ".//div[contains(@class, 'plan-summary__premium-with-credit')]").text
 
                 plan_information = {'Plan name': plan_name, 'Provider': plan_provider, 'Monthly premium': plan_premium}
                 plan_info.append(plan_information)
@@ -119,6 +131,60 @@ class Browser:
                 self.click_next_pagination()
 
         return plan_info
+
+    def extract_medicare_plans(self) -> List:
+        plan_info = []
+        pagination = self.rest.until(
+            ec.presence_of_element_located((
+                By.XPATH,
+                "//ul[@class='Pagination__results']")
+            )).text
+        max_pagination = int(pagination[-1])
+
+        for initial_pagination in range(1, max_pagination + 1):
+            plans = self.get_web_elements("//div[contains(@class, 'm-c-card PlanCard')]")
+
+            for plan in plans:
+                plan_name = plan.find_element(By.XPATH, ".//div//h2[@class = 'PlanCard__header']").text
+                plan_provider = plan.find_element(By.XPATH,
+                                                  ".//div[@class = 'PlanCard__sub_header']").text
+                plan_provider = plan_provider[0:plan_provider.index("|")]
+                monthly_premium = plan.find_element(By.XPATH, ".//div[@class='PlanCard__data']//span").text
+                yearly_drug_premium_cost = plan.find_element(
+                    By.XPATH, ".//div//span[@class='PlanCard__data e2e-total-retail-cost']")
+
+                while True:
+                    if yearly_drug_premium_cost.text != "Calculating...":
+                        break
+                    self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});",
+                                               yearly_drug_premium_cost)
+                    yearly_drug_premium_cost = plan.find_element(
+                        By.XPATH, ".//div//span[@class='PlanCard__data e2e-total-retail-cost']")
+
+                other_costs = plan.find_element(By.XPATH, ".//div[@data-testid='otherCosts']").text
+                other_costs = other_costs.replace("\n", ",  ")
+
+                plan_information = {'Plan name': plan_name, 'Provider': plan_provider,
+                                    'Monthly premium': monthly_premium,
+                                    'Yearly drug and premium cost': yearly_drug_premium_cost.text,
+                                    'Other costs': other_costs}
+                plan_info.append(plan_information)
+
+            # click Next page button
+            if initial_pagination < max_pagination:
+                self.click("//button[contains(@class, 'Pagination__next')]")
+            # wait for page to load
+            self.wait_for_url("page=")
+            time.sleep(1)
+
+        return plan_info
+
+    def county_selection(self, county_selection: str) -> None:
+        if county_selection.lower() == "nan":  # Excel returns `Nan` for empty cell
+            return
+        # select county
+        county = self.get_web_element(f"//span[contains(normalize-space(),'{county_selection}')]")
+        county.click()
 
 
 def get_driver(headless: bool = False) -> webdriver:

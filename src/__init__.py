@@ -40,9 +40,10 @@ def get_file_path(file_name):
     raise FileNotFoundError("File not found")
 
 
-def read_xls(file_name: str, sheet_name: str = 'Sheet1', parse: bool=True):
+def read_xls(file_name: str, sheet_name: str = 'Sheet1', parse: bool = True):
     """
     Get excel data
+    :param sheet_name:
     :param file_name:
     :param parse:
     :return parsed excel:
@@ -70,3 +71,10 @@ def generate_excel_result(data: List, zip_code: str):
     df = pd.DataFrame(data=data)
     # convert into excel
     df.to_excel(f"{root_dir}/tests/results/healthcare-plans-{zip_code}.xlsx", index=False)
+
+
+def generate_medicare_result(data: List, zip_code: str):
+    # convert into dataframe
+    df = pd.DataFrame(data=data)
+    # convert into excel
+    df.to_excel(f"{root_dir}/tests/results/medicare-plans-{zip_code}.xlsx", index=False)
