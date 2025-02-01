@@ -5,8 +5,8 @@ This repository utilizes [pytest](https://docs.pytest.org/en/7.1.x/) framework f
 ## Development
 ### Prerequisites:
 
-* [Python 3.9.2](https://optum.service-now.com/euts_intake?id=euts_appstore_app_details&appKeyId=34149) Ensure that you have python installed in your system preferably Python 3.9.2. _Note: Python 3.6 is no longer available in the Optum appstore_
-* [PyCharm Community Edition 2021.1+](https://optum.service-now.com/euts_intake?id=euts_appstore_app_details&appKeyId=35931)
+* Python 3.9.2 Ensure that you have python installed in your system preferably Python 3.9.2.
+* PyCharm Community Edition 2021.1+
 * [Poetry 1.1.12](https://github.com/python-poetry/poetry)
 
 [poetry](https://github.com/python-poetry/poetry) is a tool to handle dependency installation as well as building and packaging of Python packages. It only needs one file to do all of that: the new, [standardized](https://www.python.org/dev/peps/pep-0518/) `pyproject.toml`.
@@ -53,7 +53,7 @@ After cloning this github repository, prepare your development environment like 
   pytest ./tests
   ```
 
-Alternatively, if the commands on the terminal doesn't work due to Optum's restrictions then utilize Pycharm's [Run/Debug Configuration](https://www.jetbrains.com/help/pycharm/run-debug-configuration-py-test.html) and add the sample arguments above inside the `Additional Arguments` text field.
+Alternatively, if the commands on the terminal doesn't work due to some corporate restrictions then utilize Pycharm's [Run/Debug Configuration](https://www.jetbrains.com/help/pycharm/run-debug-configuration-py-test.html) and add the sample arguments above inside the `Additional Arguments` text field.
 
    ![pytest_run_debug_configurations](https://user-images.githubusercontent.com/89407715/187354752-79632637-04ea-4944-8b92-36c226f7a976.png)
 
